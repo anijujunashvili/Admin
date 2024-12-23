@@ -1,16 +1,16 @@
-import { getUsersList } from "../../../../supabase/admin/users";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { Button, Table } from "antd";
+import { useGetUserInfo } from "../../../../react-query/query/users/index";
 
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
+import { mapUsersListForAdmin } from "../../../../supabase/admin/users/utils";
 
 const UsersList = () => {
   const navigate = useNavigate();
   const { Column } = Table;
-  const { data, isPending } = useQuery({
-    queryKey: ["getUsers"],
-    queryFn: getUsersList,
+
+  const { data, isPending } = useGetUserInfo({
+    queryOptions: { select: mapUsersListForAdmin },
   });
 
   const handleNavigateToUsersEdit = (id: string) => {
@@ -29,7 +29,7 @@ const UsersList = () => {
           );
         }}
         bordered
-        dataSource={data}
+        dataSource={data || []}
       >
         <Column title="Email" dataIndex="email" />
         <Column title="Created At" dataIndex="createdAt" />

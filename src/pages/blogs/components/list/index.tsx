@@ -1,20 +1,21 @@
-import { getBlogList, Blog } from "../../../../supabase/admin/blogs";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { Button, Table } from "antd";
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
+import { useGetBlogsList } from "../../../../react-query/query/blogs";
+import { mapBlogsListForAdmin } from "../../../../supabase/admin/blogs/utils";
 
 const BlogsList = () => {
   const navigate = useNavigate();
   const { Column } = Table;
-  const { data, isPending } = useQuery({
-    queryKey: ["getBlogs"],
-    queryFn: getBlogList,
+
+  const { data, isPending } = useGetBlogsList({
+    queryOptions: { select: mapBlogsListForAdmin },
   });
 
   const handleNavigateToBlogsEdit = (id: string) => {
     navigate(`/blogs/edit/${id}`);
   };
+
   return (
     <>
       <Table
@@ -27,7 +28,7 @@ const BlogsList = () => {
           );
         }}
         bordered
-        dataSource={data as Blog[]}
+        dataSource={data}
       >
         <Column title="Title (ka)" dataIndex="title_ka" />
         <Column title="Created At" dataIndex="created_at" />

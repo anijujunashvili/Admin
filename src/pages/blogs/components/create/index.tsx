@@ -1,78 +1,54 @@
-import { Button, Form, Input, Upload } from "antd";
+import { Button, Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { Blog, addBlog, BlogType } from "../../../../supabase/admin/blogs";
+import { BlogType } from "../../../../supabase/admin/blogs/types";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { UploadOutlined } from "@ant-design/icons";
 import { userAtom } from "../../../../store/auth";
 import { useAtom } from "jotai";
+import { useAddBlog } from "../../../../react-query/mutation/blogs";
 
 const CreateBlog = () => {
   const [user] = useAtom(userAtom);
   const { Item } = Form;
-  const [form] = useForm<Blog>();
+  const [form] = useForm<BlogType>();
   const navigate = useNavigate();
 
-  const { mutate: CreateBlog } = useMutation({
-    mutationKey: ["addBlog"],
-    mutationFn: addBlog,
-    onSuccess: () => {
-      navigate("/blogs");
-    },
-  });
+  const { mutate: addNewBlog } = useAddBlog();
+
   const handleSubmit = (values: BlogType) => {
-    if (values?.image_file) {
-      const payload = { ...values, user_id: user?.user?.id };
-      console.log(payload);
-      CreateBlog(payload);
-    }
+    const payload = { ...values, user_id: user?.user?.id };
+
+    addNewBlog(payload, {
+      onSuccess: () => {
+        navigate("/blogs");
+      },
+    });
   };
-  const normFile = (e: any) => {
-    console.log("Upload event:", e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
+
   return (
     <>
-      <Form<Blog>
+      <Form<BlogType>
         name="basic"
         form={form}
         onFinish={handleSubmit}
         style={{ width: "500px" }}
         autoComplete="off"
       >
-        <Item<Blog>
+        <Item<BlogType>
           label="Title (ka)"
           name="title_ka"
           rules={[{ required: true, message: "Please input your text!" }]}
         >
           <Input />
         </Item>
-        <Item<Blog> label="Title (en)" name="title_en">
+        <Item<BlogType> label="Title (en)" name="title_en">
           <Input />
         </Item>
-        <Item<Blog> label="Description (ka)" name="description_ka">
+        <Item<BlogType> label="Description (ka)" name="description_ka">
           <Input />
         </Item>
-        <Item<Blog> label="Description (en)" name="description_en">
+        <Item<BlogType> label="Description (en)" name="description_en">
           <Input />
         </Item>
-        <Form.Item
-          name="image_file"
-          label="Upload"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-        >
-          <Upload
-            name="logo"
-            action={import.meta.env.VITE_SUPABASE_STORAGE_URL}
-            listType="picture"
-          >
-            <Button icon={<UploadOutlined />}>Click to upload</Button>
-          </Upload>
-        </Form.Item>
         <Item label={null}>
           <Button
             type="primary"

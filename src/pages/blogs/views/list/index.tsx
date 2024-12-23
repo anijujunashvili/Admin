@@ -1,9 +1,11 @@
 import BlogsList from "../../components/list";
 
-export const BlogsListView = () => {
+const BlogsListView = () => {
   return (
     <>
       <BlogsList />
     </>
   );
 };
+
+export default BlogsListView;

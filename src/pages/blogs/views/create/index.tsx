@@ -1,9 +1,11 @@
 import CreateBlog from "../../components/create/index.tsx";
 
-export const CreateBlogView = () => {
+const CreateBlogView = () => {
   return (
     <>
       <CreateBlog />
     </>
   );
 };
+
+export default CreateBlogView;

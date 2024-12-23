@@ -1,7 +1,7 @@
 import { Button, Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
-import { UpdateUserInAdmin } from "../../../../supabase/admin/users";
+import { useUpdateUserInAdmin } from "../../../../react-query/mutation/users";
 
 type FieldType = {
   email: string;
@@ -15,12 +15,18 @@ const EditUser: React.FC<{ initialValues?: FieldType }> = ({
   const [form] = useForm<FieldType>();
   const navigate = useNavigate();
   const params = useParams();
+  const { mutate: update } = useUpdateUserInAdmin();
 
   const handleSubmit = (values: FieldType) => {
-    UpdateUserInAdmin(params.id as string, values);
-    navigate("/users");
+    update(
+      { payload: { id: params.id as string, values: values } },
+      {
+        onSuccess: () => {
+          navigate("/users");
+        },
+      }
+    );
   };
-  console.log(initialValues);
 
   return (
     <Form<FieldType>

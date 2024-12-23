@@ -1,31 +1,26 @@
 import UpdateBlog from "../../components/update";
 import { useParams } from "react-router-dom";
-import { getSingleBlog } from "../../../../supabase/admin/blogs";
-import { useQuery } from "@tanstack/react-query";
+import { useGetSingleBlog } from "../../../../react-query/query/blogs";
+import { mapSingleBlogForAdmin } from "../../../../supabase/admin/blogs/utils";
+import { BlogType } from "../../../../supabase/admin/blogs/types";
 
-export const BlogUpdateView = () => {
+const BlogUpdateView = () => {
   const params = useParams();
 
-  const { data } = useQuery({
-    queryKey: ["getBlog", params.id],
-    queryFn: () => getSingleBlog(params.id as string),
-    select: (data) => {
-      if (data) {
-        return data[0];
-      }
-    },
+  const { data, isPending } = useGetSingleBlog({
+    queryOptions: { select: mapSingleBlogForAdmin },
+    id: params.id as string,
   });
-
-  const initialValues = {
-    title_ka: data ? data["title_ka"] : "",
-    title_en: data ? data["title_en"] : "",
-    description_ka: data ? data["description_ka"] : "",
-    description_en: data ? data["description_en"] : "",
-  };
 
   return (
     <>
-      <UpdateBlog initialValues={initialValues} />
+      {isPending ? (
+        <div>Loading...</div>
+      ) : (
+        <UpdateBlog initialValues={data as BlogType} />
+      )}
     </>
   );
 };
+
+export default BlogUpdateView;

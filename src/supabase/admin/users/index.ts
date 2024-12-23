@@ -1,42 +1,26 @@
 import { supabase } from "../..";
-import { mapUsersListForAdmin } from "./utils.ts";
+import { UserInfo, editUserType } from "./types";
 
 export const getUsersList = async () => {
-  try {
-    const result = await supabase.auth.admin.listUsers();
-
-    return mapUsersListForAdmin(result.data.users as User[]);
-  } catch (error) {
-    console.log("Error during get users list", error);
-  }
+  return supabase.auth.admin.listUsers().then((res) => {
+    return res.data.users as User[];
+  });
 };
 
-export const UpdateUserInAdmin = async (
-  id: string,
-  payload: { email: string; phone: string }
-) => {
-  try {
-    return await supabase.auth.admin.updateUserById(id, payload);
-  } catch (error) {
-    console.log("Error during get user update", error);
-  }
+export const UpdateUserInAdmin = async ({ payload }: editUserType) => {
+  return await supabase.auth.admin.updateUserById(payload.id, payload.values);
 };
 
 export const addUser = async (payload: { email: string; phone: string }) => {
-  try {
-    return await supabase.auth.admin.createUser(payload);
-  } catch (error) {
-    console.log("Error during create user", error);
-  }
+  return supabase.auth.admin.createUser(payload).then((result) => {
+    return result;
+  });
 };
 
 export const getUserInfo = async (id: string) => {
-  try {
-    const result = await supabase.auth.admin.getUserById(id);
-    return result.data.user;
-  } catch (error) {
-    console.log("Error during get user update", error);
-  }
+  return supabase.auth.admin.getUserById(id).then((result) => {
+    return result.data.user as UserInfo;
+  });
 };
 
 export type User = {

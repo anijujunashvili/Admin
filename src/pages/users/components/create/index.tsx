@@ -1,8 +1,7 @@
 import { Button, Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { useMutation } from "@tanstack/react-query";
-import { addUser } from "../../../../supabase/admin/users/index.ts";
 import { useNavigate } from "react-router-dom";
+import { useCreateUser } from "../../../../react-query/mutation/users";
 
 type FieldType = {
   email: string;
@@ -14,16 +13,14 @@ const CreateUserForm = () => {
   const [form] = useForm<FieldType>();
   const navigate = useNavigate();
 
-  const { mutate: createUser } = useMutation({
-    mutationKey: ["addUser", 23],
-    mutationFn: (values: { email: string; phone: string }) => addUser(values),
-    onSuccess: () => {
-      navigate("/users");
-    },
-  });
+  const { mutate: createUser } = useCreateUser();
 
   const handleSubmit = (values: { email: string; phone: string }) => {
-    createUser(values);
+    createUser(values, {
+      onSuccess: () => {
+        navigate("/users");
+      },
+    });
   };
   return (
     <>

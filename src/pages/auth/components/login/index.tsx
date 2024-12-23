@@ -1,8 +1,7 @@
 import type { FormProps } from "antd";
 import { Button, Form, Input } from "antd";
-import { login } from "../../../../supabase/auth";
-import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
+import { useSignIn } from "../../../../react-query/mutation/auth";
 
 type FieldType = {
   email: string;
@@ -12,16 +11,14 @@ type FieldType = {
 const LoginPage = () => {
   const { Item } = Form;
   const navigate = useNavigate();
-  const { mutate: handleLogin, isError } = useMutation({
-    mutationKey: ["login"],
-    mutationFn: login,
-    onSuccess: () => {
-      navigate("/users");
-    },
-  });
+  const { mutate: handleLogin, isError } = useSignIn();
   const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
     console.log("Success:", values);
-    handleLogin(values);
+    handleLogin(values, {
+      onSuccess: () => {
+        navigate("/users");
+      },
+    });
   };
 
   const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (

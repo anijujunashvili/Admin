@@ -1,5 +1,6 @@
 import { User } from "./index.ts";
 import dayjs from "dayjs";
+import { UserInfo } from "./types.ts";
 
 export const mapUsersListForAdmin = (users: User[]) => {
   return users?.map((user) => ({
@@ -10,4 +11,11 @@ export const mapUsersListForAdmin = (users: User[]) => {
     id: user?.id,
     key: user?.id,
   }));
+};
+
+export const mapUsersForAdmin = (user: UserInfo) => {
+  return {
+    email: user.email,
+    phone: user.phone,
+  };
 };

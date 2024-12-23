@@ -1,7 +1,9 @@
 import { Button, Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { Blog, editBlog, BlogType } from "../../../../supabase/admin/blogs";
+import { BlogType } from "../../../../supabase/admin/blogs/types";
 import { useParams, useNavigate } from "react-router-dom";
+import { useEditBlog } from "../../../../react-query/mutation/blogs";
+
 type FieldType = {
   title_ka: string;
   title_en: string;
@@ -12,13 +14,19 @@ const UpdateBlog: React.FC<{ initialValues: BlogType }> = ({
   initialValues,
 }) => {
   const { Item } = Form;
-  const [form] = useForm<Blog>();
+  const [form] = useForm<FieldType>();
   const params = useParams();
   const navigate = useNavigate();
 
+  const { mutate: update } = useEditBlog();
+
   const handleSubmit = (values: BlogType) => {
-    editBlog(params.id as string, values);
-    navigate("/blogs");
+    const payload = { payload: { id: params.id as string, values: values } };
+    update(payload, {
+      onSuccess: () => {
+        navigate("/blogs");
+      },
+    });
   };
 
   return (
